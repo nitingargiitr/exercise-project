@@ -40,6 +40,12 @@ echo "🤖 AI models extracted - video analysis will work!"
 # Create necessary directories
 mkdir -p uploads output data models
 
+# Start health check server in background to handle health checks immediately
+echo "🏥 Starting health check server..."
+python3 health_check.py &
+HEALTH_PID=$!
+echo "✅ Health check server started (PID: $HEALTH_PID)"
+
 # Install dependencies first
 echo "📦 Installing Python dependencies..."
 echo "🔍 Checking pip availability..."
@@ -57,6 +63,11 @@ else
     python3 -m pip install --no-cache-dir -r requirements.txt
 fi
 echo "✅ Dependencies installation completed"
+
+# Add delay to ensure all dependencies are fully loaded
+echo "⏳ Waiting for dependencies to fully initialize..."
+sleep 10
+echo "✅ Dependencies initialization completed"
 
 # Verify Flask installation
 echo "🔍 Verifying Flask installation..."
@@ -86,6 +97,8 @@ echo "🚀 Starting Gunicorn server on port $PORT..."
 echo "🧪 Testing app import..."
 if python3 -c "import app; print('App import successful')" 2>/dev/null; then
     echo "✅ App import test passed, starting Exercise Analyzer..."
+    echo "🔄 Stopping health check server and starting main app..."
+    kill $HEALTH_PID 2>/dev/null || true
     exec gunicorn \
         --bind 0.0.0.0:${PORT} \
         --workers 1 \
@@ -161,6 +174,8 @@ else
     echo "❌ Cannot start main app due to import errors"
     echo "🔧 Starting minimal app as fallback..."
     echo "🎯 This ensures your app is accessible while we fix the import issues"
+    echo "🔄 Stopping health check server and starting minimal app..."
+    kill $HEALTH_PID 2>/dev/null || true
     
     echo "🚀 Starting minimal app with health check support..."
     exec gunicorn \
