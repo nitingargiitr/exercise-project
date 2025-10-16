@@ -60,8 +60,49 @@ if python3 -c "import app; print('App import successful')" 2>/dev/null; then
         app:app
 else
     echo "❌ App import test failed!"
-    echo "🔧 Running detailed import test..."
-    python3 test_imports.py
+    echo "🔧 Testing imports step by step..."
+    
+    # Test basic imports
+    echo "Testing basic imports..."
+    if python3 -c "import os, sys, time; from datetime import datetime; from flask import Flask; print('Basic imports OK')" 2>/dev/null; then
+        echo "✅ Basic imports: OK"
+    else
+        echo "❌ Basic imports failed"
+    fi
+    
+    # Test models import
+    echo "Testing models import..."
+    if python3 -c "from models import db, User; print('Models import OK')" 2>/dev/null; then
+        echo "✅ Models import: OK"
+    else
+        echo "❌ Models import failed"
+    fi
+    
+    # Test forms import
+    echo "Testing forms import..."
+    if python3 -c "from forms import LoginForm; print('Forms import OK')" 2>/dev/null; then
+        echo "✅ Forms import: OK"
+    else
+        echo "❌ Forms import failed"
+    fi
+    
+    # Test auth utils import
+    echo "Testing auth utils import..."
+    if python3 -c "from auth_utils import AuthManager; print('Auth utils import OK')" 2>/dev/null; then
+        echo "✅ Auth utils import: OK"
+    else
+        echo "❌ Auth utils import failed"
+    fi
+    
+    # Test gamification import
+    echo "Testing gamification import..."
+    if python3 -c "from gamification import GamificationManager; print('Gamification import OK')" 2>/dev/null; then
+        echo "✅ Gamification import: OK"
+    else
+        echo "❌ Gamification import failed"
+    fi
+    
     echo "❌ Cannot start app due to import errors"
+    echo "🔧 Check the specific import errors above"
     exit 1
 fi
