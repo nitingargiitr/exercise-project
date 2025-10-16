@@ -42,48 +42,17 @@ mkdir -p uploads output data models
 
 echo "🚀 Starting Gunicorn server on port $PORT..."
 
-# Try to start the simplified main app first
-echo "🧪 Testing simplified main app..."
-if python3 -c "import simple_main_app; print('Simplified main app imports successfully')" 2>/dev/null; then
-    echo "✅ Simplified main app test passed, starting Exercise Analyzer..."
-    exec gunicorn \
-        --bind 0.0.0.0:${PORT} \
-        --workers 1 \
-        --timeout 300 \
-        --keep-alive 2 \
-        --max-requests 1000 \
-        --max-requests-jitter 100 \
-        --preload \
-        --log-level info \
-        --access-logfile - \
-        --error-logfile - \
-        simple_main_app:app
-elif python3 -c "import app; print('Original main app imports successfully')" 2>/dev/null; then
-    echo "✅ Original main app test passed, starting full Exercise Analyzer..."
-    exec gunicorn \
-        --bind 0.0.0.0:${PORT} \
-        --workers 1 \
-        --timeout 300 \
-        --keep-alive 2 \
-        --max-requests 1000 \
-        --max-requests-jitter 100 \
-        --preload \
-        --log-level info \
-        --access-logfile - \
-        --error-logfile - \
-        app:app
-else
-    echo "⚠️ Both main apps failed, starting fallback app..."
-    echo "🔧 This usually means there's an import or dependency issue"
-    exec gunicorn \
-        --bind 0.0.0.0:${PORT} \
-        --workers 1 \
-        --timeout 60 \
-        --keep-alive 2 \
-        --max-requests 1000 \
-        --max-requests-jitter 100 \
-        --log-level info \
-        --access-logfile - \
-        --error-logfile - \
-        fallback_app:app
-fi
+# Start the main Exercise Analyzer app
+echo "🎯 Starting Exercise Analyzer Flask app..."
+exec gunicorn \
+    --bind 0.0.0.0:${PORT} \
+    --workers 1 \
+    --timeout 300 \
+    --keep-alive 2 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --preload \
+    --log-level info \
+    --access-logfile - \
+    --error-logfile - \
+    app:app

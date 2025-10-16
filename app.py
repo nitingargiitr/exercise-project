@@ -35,92 +35,22 @@ except ImportError as e:
         def __call__(self, *args, **kwargs): return None
     def calculate_angle(*args, **kwargs): return 0
 
-# Import core app dependencies with comprehensive error handling
+# Import core app dependencies
 print("🔧 Loading core dependencies...")
 
-# Create dummy classes first as fallbacks
-class DummyDB:
-    def init_app(self, app): pass
-    def create_all(self): pass
-    def session(self): return self
-    def execute(self, query): pass
-    def add(self, obj): pass
-    def commit(self): pass
+# Import models
+from models import db, User, UserSession, ExerciseHistory, UserLevel, Achievement, UserAchievement, Card, UserCard, DailyChallenge, UserDailyChallenge
 
-class DummyUser:
-    def __init__(self): 
-        self.id = 1
-        self.is_authenticated = False
+# Import forms
+from forms import LoginForm, SignupForm, ForgotPasswordForm
 
-# Initialize with dummy values first
-db = DummyDB()
-User = DummyUser
-current_user = DummyUser()
+# Import auth utilities
+from auth_utils import AuthManager, GoogleOAuth
 
-# Try to import real dependencies, but don't fail if they don't work
-try:
-    print("📦 Attempting to import models...")
-    from models import db, User, UserSession, ExerciseHistory, UserLevel, Achievement, UserAchievement, Card, UserCard, DailyChallenge, UserDailyChallenge
-    print("✅ Models imported successfully")
-except Exception as e:
-    print(f"⚠️ Models import failed: {e}")
-    print("Using dummy models...")
-    # Create dummy classes for missing models
-    class DummyUser: pass
-    class DummySession: pass
-    class DummyHistory: pass
-    class DummyLevel: pass
-    class DummyAchievement: pass
-    class DummyCard: pass
-    class DummyChallenge: pass
-    User = DummyUser
-    UserSession = DummySession
-    ExerciseHistory = DummyHistory
-    UserLevel = DummyLevel
-    Achievement = DummyAchievement
-    UserAchievement = DummyAchievement
-    Card = DummyCard
-    UserCard = DummyCard
-    DailyChallenge = DummyChallenge
-    UserDailyChallenge = DummyChallenge
+# Import gamification
+from gamification import GamificationManager, initialize_gamification_data
 
-try:
-    print("📦 Attempting to import forms...")
-    from forms import LoginForm, SignupForm, ForgotPasswordForm
-    print("✅ Forms imported successfully")
-except Exception as e:
-    print(f"⚠️ Forms import failed: {e}")
-    print("Using dummy forms...")
-    # Create dummy form classes
-    class DummyForm: pass
-    LoginForm = DummyForm
-    SignupForm = DummyForm
-    ForgotPasswordForm = DummyForm
-
-try:
-    print("📦 Attempting to import auth_utils...")
-    from auth_utils import AuthManager, GoogleOAuth
-    print("✅ Auth utils imported successfully")
-except Exception as e:
-    print(f"⚠️ Auth utils import failed: {e}")
-    print("Using dummy auth...")
-    # Create dummy auth classes
-    class DummyAuthManager: pass
-    class DummyGoogleOAuth: pass
-    AuthManager = DummyAuthManager
-    GoogleOAuth = DummyGoogleOAuth
-
-try:
-    print("📦 Attempting to import gamification...")
-    from gamification import GamificationManager, initialize_gamification_data
-    print("✅ Gamification imported successfully")
-except Exception as e:
-    print(f"⚠️ Gamification import failed: {e}")
-    print("Using dummy gamification...")
-    # Create dummy gamification functions
-    def initialize_gamification_data(): pass
-
-print("✅ Core dependencies loading completed")
+print("✅ Core dependencies loaded successfully")
 
 app = Flask(__name__)
 
@@ -192,56 +122,27 @@ login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'info'
 
-# Initialize gamification (with error handling)
-try:
-    gamification = GamificationManager()
-    gamification.init_app(app)
-    print("✅ Gamification manager initialized")
-except Exception as e:
-    print(f"⚠️ Gamification initialization failed: {e}")
-    # Create a dummy gamification manager
-    class DummyGamificationManager:
-        def init_app(self, app): pass
-        def get_user_stats(self, user_id): return {}
-        def get_or_create_user_level(self, user_id): return None
-        def check_level_up(self, user_level): return {'leveled_up': False}
-        def calculate_workout_rewards(self, user_id, exercise_type, accuracy, mistakes): return {}
-    gamification = DummyGamificationManager()
-    print("✅ Dummy gamification manager created")
+# Initialize gamification
+gamification = GamificationManager()
+gamification.init_app(app)
+print("✅ Gamification manager initialized")
 
-# Initialize database when app starts (for Gunicorn)
+# Initialize database when app starts
 def initialize_database_on_startup():
-    """Initialize database when app starts with Gunicorn"""
-    try:
-        print("🗄️ Initializing database on startup...")
-        with app.app_context():
-            try:
-                db.create_all()
-                print("✅ Database tables created successfully")
-            except Exception as e:
-                print(f"⚠️ Database creation failed: {e}")
-                print("Continuing without database...")
-            
-            # Initialize gamification data
-            try:
-                initialize_gamification_data()
-                print("✅ Gamification data initialized successfully")
-            except Exception as e:
-                print(f"⚠️ Gamification initialization failed: {e}")
-                print("Continuing without gamification...")
-                
-    except Exception as e:
-        print(f"⚠️ Database initialization failed: {e}")
-        print("Continuing without database...")
+    """Initialize database when app starts"""
+    print("🗄️ Initializing database on startup...")
+    with app.app_context():
+        db.create_all()
+        print("✅ Database tables created successfully")
+        
+        # Initialize gamification data
+        initialize_gamification_data()
+        print("✅ Gamification data initialized successfully")
 
-# Call database initialization (but don't let it crash the app)
+# Call database initialization
 print("🔧 Starting database initialization...")
-try:
-    initialize_database_on_startup()
-    print("✅ Database initialization completed")
-except Exception as e:
-    print(f"⚠️ Database initialization error (continuing): {e}")
-    print("App will continue without database features...")
+initialize_database_on_startup()
+print("✅ Database initialization completed")
 
 print("✅ App initialization completed successfully")
 
