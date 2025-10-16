@@ -40,6 +40,43 @@ echo "🤖 AI models extracted - video analysis will work!"
 # Create necessary directories
 mkdir -p uploads output data models
 
+# Install dependencies first
+echo "📦 Installing Python dependencies..."
+echo "🔍 Checking pip availability..."
+if command -v pip3 &> /dev/null; then
+    echo "✅ pip3 found, installing dependencies..."
+    pip3 install --no-cache-dir -r requirements.txt
+elif command -v pip &> /dev/null; then
+    echo "✅ pip found, installing dependencies..."
+    pip install --no-cache-dir -r requirements.txt
+else
+    echo "❌ pip not found, trying python -m pip..."
+    python3 -m pip install --no-cache-dir -r requirements.txt
+fi
+echo "✅ Dependencies installation completed"
+
+# Verify Flask installation
+echo "🔍 Verifying Flask installation..."
+if python3 -c "import flask; print(f'Flask version: {flask.__version__}')" 2>/dev/null; then
+    echo "✅ Flask is installed and working"
+else
+    echo "❌ Flask installation failed"
+    echo "🔧 Trying to install Flask manually..."
+    pip3 install Flask==2.3.3
+    echo "🔍 Re-verifying Flask installation..."
+    if python3 -c "import flask; print(f'Flask version: {flask.__version__}')" 2>/dev/null; then
+        echo "✅ Flask is now installed and working"
+    else
+        echo "❌ Flask installation still failed"
+        echo "🔧 Checking Python environment..."
+        python3 --version
+        which python3
+        echo "🔧 Checking pip environment..."
+        pip3 --version
+        which pip3
+    fi
+fi
+
 echo "🚀 Starting Gunicorn server on port $PORT..."
 
 # Test app import before starting Gunicorn
