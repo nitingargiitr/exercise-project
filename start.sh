@@ -45,12 +45,15 @@ echo "📦 Installing Python dependencies..."
 echo "🔍 Checking pip availability..."
 if command -v pip3 &> /dev/null; then
     echo "✅ pip3 found, installing dependencies..."
+    pip3 install --no-cache-dir --upgrade pip
     pip3 install --no-cache-dir -r requirements.txt
 elif command -v pip &> /dev/null; then
     echo "✅ pip found, installing dependencies..."
+    pip install --no-cache-dir --upgrade pip
     pip install --no-cache-dir -r requirements.txt
 else
     echo "❌ pip not found, trying python -m pip..."
+    python3 -m pip install --no-cache-dir --upgrade pip
     python3 -m pip install --no-cache-dir -r requirements.txt
 fi
 echo "✅ Dependencies installation completed"
@@ -159,15 +162,17 @@ else
     echo "🔧 Starting minimal app as fallback..."
     echo "🎯 This ensures your app is accessible while we fix the import issues"
     
+    echo "🚀 Starting minimal app with health check support..."
     exec gunicorn \
         --bind 0.0.0.0:${PORT} \
         --workers 1 \
-        --timeout 60 \
+        --timeout 120 \
         --keep-alive 2 \
         --max-requests 1000 \
         --max-requests-jitter 100 \
         --log-level info \
         --access-logfile - \
         --error-logfile - \
+        --preload \
         minimal_app:app
 fi

@@ -5,7 +5,7 @@ Flask-SQLAlchemy==3.0.5
 Flask-Login==0.6.3
 Flask-WTF==1.2.1
 WTForms==3.1.1
-email-validator==2.1.0
+email-validator==2.1.1
 requests==2.31.0
 python-dotenv==1.0.0
 
@@ -25,6 +25,11 @@ mediapipe==0.10.7
 torch==2.2.0+cpu
 torchvision==0.17.0+cpu
 --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Additional stability packages
+certifi>=2023.7.22
+charset-normalizer>=3.2.0
+idna>=3.4
 
 # System dependencies
 setuptools==68.2.2

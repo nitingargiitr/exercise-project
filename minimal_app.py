@@ -59,15 +59,19 @@ def index():
 
 @app.route('/ping')
 def ping():
-    return "pong"
+    return "pong", 200
 
 @app.route('/health')
 def health():
-    return "healthy"
+    return "healthy", 200
 
 @app.route('/status')
 def status():
-    return "ok"
+    return "ok", 200
+
+@app.route('/healthcheck')
+def healthcheck():
+    return "ok", 200
 
 @app.route('/debug')
 def debug():
