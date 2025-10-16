@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - Exercise Form Analyzer{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to continue your fitness journey</p>
+        </div>
+        
+        <div class="auth-form-container">
+            <form method="POST" class="auth-form" id="loginForm">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    {{ form.email(class="form-input", placeholder="Enter your email", required=true) }}
+                    {% if form.email.errors %}
+                        <div class="form-error">{{ form.email.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    {{ form.password(class="form-input", placeholder="Enter your password", required=true) }}
+                    {% if form.password.errors %}
+                        <div class="form-error">{{ form.password.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    {{ form.remember_me(class="form-checkbox") }}
+                    <label for="remember_me" class="checkbox-label">Remember me</label>
+                </div>
+                
+                <button type="submit" class="auth-button primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+            </form>
+            
+            {% if google_auth_url %}
+            <div class="auth-divider">
+                <span>or</span>
+            </div>
+            
+            <a href="{{ google_auth_url }}" class="auth-button google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+            </a>
+            {% endif %}
+            
+            <div class="auth-links">
+                <a href="{{ url_for('forgot_password') }}" class="auth-link">Forgot your password?</a>
+                <p class="auth-text">Don't have an account? <a href="{{ url_for('signup') }}" class="auth-link">Sign up here</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="auth-features">
+        <h3>Why sign in?</h3>
+        <div class="feature-list">
+            <div class="feature-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Track your progress over time</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-history"></i>
+                <span>Access your exercise history</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-cog"></i>
+                <span>Personalized recommendations</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const submitButton = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function(e) {
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+        submitButton.disabled = true;
+    });
+    
+    // Add loading state to Google button
+    const googleButton = document.querySelector('.auth-button.google');
+    googleButton.addEventListener('click', function() {
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
+        this.style.pointerEvents = 'none';
+    });
+});
+</script>
+{% endblock %}

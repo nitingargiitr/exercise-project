@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Exercise Form Analyzer - Home{% endblock %}
+
+{% block content %}
+<div class="hero-section flowing-section parallax-container">
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <span class="gradient-text">Push Beyond Limits</span>
+            <br>Your Journey. Your Power.
+        </h1>
+        <p class="hero-subtitle">
+            Built, Not Born. Every rep counts. Every moment matters. Your transformation starts here.
+        </p>
+        <div class="hero-stats">
+            <div class="stat">
+                <i class="fas fa-dumbbell"></i>
+                <span>Your Strength</span>
+            </div>
+            <div class="stat">
+                <i class="fas fa-brain"></i>
+                <span>Your Progress</span>
+            </div>
+            <div class="stat">
+                <i class="fas fa-chart-line"></i>
+                <span>Your Growth</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="exercises-section flowing-section parallax-container">
+    <div class="container">
+        <h2 class="section-title">Choose Your Challenge</h2>
+        <p class="section-subtitle">Your form. Your technique. Your mastery. Every exercise is a step toward your best self.</p>
+        
+        <div class="exercises-grid">
+            {% for exercise_key, exercise in exercises.items() %}
+            <div class="exercise-card" onclick="selectExercise('{{ exercise_key }}')">
+                <div class="exercise-icon">
+                    {% if exercise_key == 'pushup' %}
+                        <div class="exercise-illustration pushup-illustration">
+                            <div class="body">
+                                <div class="head"></div>
+                                <div class="torso"></div>
+                                <div class="arms">
+                                    <div class="arm left"></div>
+                                    <div class="arm right"></div>
+                                </div>
+                                <div class="legs">
+                                    <div class="leg left"></div>
+                                    <div class="leg right"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif exercise_key == 'pullup' %}
+                        <div class="exercise-illustration pullup-illustration">
+                            <div class="bar"></div>
+                            <div class="body">
+                                <div class="head"></div>
+                                <div class="torso"></div>
+                                <div class="arms">
+                                    <div class="arm left"></div>
+                                    <div class="arm right"></div>
+                                </div>
+                                <div class="legs">
+                                    <div class="leg left"></div>
+                                    <div class="leg right"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif exercise_key == 'plank' %}
+                        <div class="exercise-illustration plank-illustration">
+                            <div class="body">
+                                <div class="head"></div>
+                                <div class="torso"></div>
+                                <div class="arms">
+                                    <div class="arm left"></div>
+                                    <div class="arm right"></div>
+                                </div>
+                                <div class="legs">
+                                    <div class="leg left"></div>
+                                    <div class="leg right"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif exercise_key == 'squat' %}
+                        <div class="exercise-illustration squat-illustration">
+                            <div class="body">
+                                <div class="head"></div>
+                                <div class="torso"></div>
+                                <div class="arms">
+                                    <div class="arm left"></div>
+                                    <div class="arm right"></div>
+                                </div>
+                                <div class="legs">
+                                    <div class="leg left"></div>
+                                    <div class="leg right"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif exercise_key == 'tricep_dips' %}
+                        <div class="exercise-illustration dips-illustration">
+                            <div class="bench"></div>
+                            <div class="body">
+                                <div class="head"></div>
+                                <div class="torso"></div>
+                                <div class="arms">
+                                    <div class="arm left"></div>
+                                    <div class="arm right"></div>
+                                </div>
+                                <div class="legs">
+                                    <div class="leg left"></div>
+                                    <div class="leg right"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <h3 class="exercise-name">{{ exercise.name }}</h3>
+                <p class="exercise-description">{{ exercise.description }}</p>
+                <div class="exercise-muscles">
+                    {% for muscle in exercise.muscles[:3] %}
+                        <span class="muscle-tag">{{ muscle }}</span>
+                    {% endfor %}
+                    {% if exercise.muscles|length > 3 %}
+                        <span class="muscle-tag">+{{ exercise.muscles|length - 3 }} more</span>
+                    {% endif %}
+                </div>
+                <div class="exercise-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="features-section flowing-section parallax-container">
+    <div class="container">
+        <h2 class="section-title">Your Path to Excellence</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h3>Capture Your Movement</h3>
+                <p>Record your workout and let AI analyze your form to unlock your potential.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>AI-Powered Analysis</h3>
+                <p>Advanced AI analyzes your form using cutting-edge technology to guide your progress.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3>Your Feedback</h3>
+                <p>Receive detailed feedback with accuracy scores and personalized tips to achieve your goals.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function selectExercise(exerciseType) {
+    window.location.href = `/exercise/${exerciseType}`;
+}
+
+// Add smooth scroll behavior
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.exercise-card, .feature-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

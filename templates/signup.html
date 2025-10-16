@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Exercise Form Analyzer{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Start Your Journey</h1>
+            <p class="auth-subtitle">Create your account and unlock your potential</p>
+        </div>
+        
+        <div class="auth-form-container">
+            <form method="POST" class="auth-form" id="signupForm">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    <label for="name" class="form-label">Full Name</label>
+                    {{ form.name(class="form-input", placeholder="Enter your full name", required=true) }}
+                    {% if form.name.errors %}
+                        <div class="form-error">{{ form.name.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    {{ form.email(class="form-input", placeholder="Enter your email", required=true) }}
+                    {% if form.email.errors %}
+                        <div class="form-error">{{ form.email.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    {{ form.password(class="form-input", placeholder="Create a strong password", required=true) }}
+                    {% if form.password.errors %}
+                        <div class="form-error">{{ form.password.errors[0] }}</div>
+                    {% endif %}
+                    <div class="password-requirements">
+                        <small>Password must be at least 8 characters long</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    {{ form.confirm_password(class="form-input", placeholder="Confirm your password", required=true) }}
+                    {% if form.confirm_password.errors %}
+                        <div class="form-error">{{ form.confirm_password.errors[0] }}</div>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="auth-button primary">
+                    <i class="fas fa-user-plus"></i>
+                    Create Account
+                </button>
+            </form>
+            
+            {% if google_auth_url %}
+            <div class="auth-divider">
+                <span>or</span>
+            </div>
+            
+            <a href="{{ google_auth_url }}" class="auth-button google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+            </a>
+            {% endif %}
+            
+            <div class="auth-links">
+                <p class="auth-text">Already have an account? <a href="{{ url_for('login') }}" class="auth-link">Sign in here</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="auth-features">
+        <h3>What you'll get:</h3>
+        <div class="feature-list">
+            <div class="feature-item">
+                <i class="fas fa-video"></i>
+                <span>AI-powered form analysis</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Progress tracking and insights</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-dumbbell"></i>
+                <span>Personalized workout recommendations</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-mobile-alt"></i>
+                <span>Access from any device</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('signupForm');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const passwordInput = form.querySelector('input[name="password"]');
+    const confirmPasswordInput = form.querySelector('input[name="confirm_password"]');
+    
+    // Password validation
+    function validatePassword() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        if (password.length < 8) {
+            passwordInput.setCustomValidity('Password must be at least 8 characters long');
+        } else if (password !== confirmPassword) {
+            confirmPasswordInput.setCustomValidity('Passwords do not match');
+        } else {
+            passwordInput.setCustomValidity('');
+            confirmPasswordInput.setCustomValidity('');
+        }
+    }
+    
+    passwordInput.addEventListener('input', validatePassword);
+    confirmPasswordInput.addEventListener('input', validatePassword);
+    
+    form.addEventListener('submit', function(e) {
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+        submitButton.disabled = true;
+    });
+    
+    // Add loading state to Google button
+    const googleButton = document.querySelector('.auth-button.google');
+    googleButton.addEventListener('click', function() {
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
+        this.style.pointerEvents = 'none';
+    });
+});
+</script>
+{% endblock %}

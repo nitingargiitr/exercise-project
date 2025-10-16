@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exercise.name }} - Exercise Form Analyzer{% endblock %}
+
+{% block content %}
+<div class="exercise-header">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('index') }}">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>{{ exercise.name }}</span>
+        </div>
+        
+        <div class="exercise-title-section">
+            <h1 class="exercise-title">{{ exercise.name }}</h1>
+            <p class="exercise-subtitle">{{ exercise.description }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="exercise-content">
+    <div class="container">
+        <div class="exercise-layout">
+            <!-- Demo Video Section -->
+            <div class="demo-video-section">
+                <h2 class="section-title">
+                    <i class="fas fa-play-circle"></i>
+                    Proper Form Demonstration
+                </h2>
+                {% if demo_video_exists %}
+                <div class="video-container">
+                    <video controls class="demo-video">
+                        <source src="{{ url_for('serve_demo_video', filename=demo_video_path) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                {% else %}
+                <div class="no-video-placeholder">
+                    <i class="fas fa-video-slash"></i>
+                    <p>Demo video not available</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Exercise Information -->
+            <div class="exercise-info-section">
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-header">
+                            <i class="fas fa-heart"></i>
+                            <h3>Health Benefits</h3>
+                        </div>
+                        <ul class="benefits-list">
+                            {% for benefit in exercise.benefits %}
+                            <li>
+                                <i class="fas fa-check"></i>
+                                {{ benefit }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-header">
+                            <i class="fas fa-dumbbell"></i>
+                            <h3>Target Muscles</h3>
+                        </div>
+                        <div class="muscles-grid">
+                            {% for muscle in exercise.muscles %}
+                            <span class="muscle-badge">{{ muscle }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <h3>Form Tips</h3>
+                        </div>
+                        <div class="tips-content">
+                            {% if exercise_type == 'pushup' %}
+                                <p>• Keep your body in a straight line from head to heels</p>
+                                <p>• Lower your chest until it nearly touches the ground</p>
+                                <p>• Push up explosively while maintaining core tension</p>
+                                <p>• Keep elbows at a 45-degree angle to your body</p>
+                            {% elif exercise_type == 'pullup' %}
+                                <p>• Start from a dead hang with arms fully extended</p>
+                                <p>• Pull your chest up to the bar using your back muscles</p>
+                                <p>• Control the descent slowly and deliberately</p>
+                                <p>• Keep your core engaged throughout the movement</p>
+                            {% elif exercise_type == 'plank' %}
+                                <p>• Maintain a straight line from head to heels</p>
+                                <p>• Keep your core tight and breathe normally</p>
+                                <p>• Don't let your hips sag or pike up</p>
+                                <p>• Distribute weight evenly between forearms and toes</p>
+                            {% elif exercise_type == 'squat' %}
+                                <p>• Keep your feet shoulder-width apart</p>
+                                <p>• Lower until your thighs are parallel to the ground</p>
+                                <p>• Keep your chest up and core engaged</p>
+                                <p>• Push through your heels to return to standing</p>
+                            {% elif exercise_type == 'tricep_dips' %}
+                                <p>• Keep your body close to the bench or bars</p>
+                                <p>• Lower until your elbows reach 90 degrees</p>
+                                <p>• Push up using your triceps, not momentum</p>
+                                <p>• Keep your shoulders down and chest up</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Section -->
+        <div class="action-section">
+            <div class="action-content">
+                <h2>Ready to Analyze Your Form?</h2>
+                <p>Upload a video of yourself performing {{ exercise.name.lower() }} and get instant AI-powered feedback on your technique.</p>
+                <a href="{{ url_for('analyze_page', exercise_type=exercise_type) }}" class="analyze-btn">
+                    <i class="fas fa-upload"></i>
+                    Analyze My Video
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate info cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.info-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+
+    // Video play/pause animation
+    const video = document.querySelector('.demo-video');
+    if (video) {
+        video.addEventListener('play', function() {
+            this.parentElement.classList.add('playing');
+        });
+        
+        video.addEventListener('pause', function() {
+            this.parentElement.classList.remove('playing');
+        });
+    }
+});
+</script>
+{% endblock %}

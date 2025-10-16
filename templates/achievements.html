@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Achievements - Exercise Form Analyzer{% endblock %}
+
+{% block content %}
+<div class="achievements-container">
+    <div class="achievements-header">
+        <h1><i class="fas fa-trophy"></i> Achievements</h1>
+        <p>Unlock badges by completing workouts and reaching milestones!</p>
+    </div>
+    
+    <div class="achievements-grid">
+        {% for achievement in all_achievements %}
+        <div class="achievement-card {% if achievement.id in earned_ids %}earned{% else %}locked{% endif %}">
+            <div class="achievement-icon">
+                <i class="{{ achievement.icon }}"></i>
+            </div>
+            <div class="achievement-info">
+                <h3>{{ achievement.name }}</h3>
+                <p>{{ achievement.description }}</p>
+                <div class="achievement-reward">
+                    <span class="xp-reward">+{{ achievement.xp_reward }} XP</span>
+                </div>
+            </div>
+            <div class="achievement-status">
+                {% if achievement.id in earned_ids %}
+                    <i class="fas fa-check-circle earned-icon"></i>
+                    <span class="status-text">Earned!</span>
+                {% else %}
+                    <i class="fas fa-lock locked-icon"></i>
+                    <span class="status-text">Locked</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="achievements-stats">
+        <div class="stat-card">
+            <h3>{{ earned_ids|length }} / {{ all_achievements|length }}</h3>
+            <p>Achievements Unlocked</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ (earned_ids|length / all_achievements|length * 100)|round }}%</h3>
+            <p>Completion Rate</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to achievement cards
+    const cards = document.querySelectorAll('.achievement-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
+{% endblock %}
+

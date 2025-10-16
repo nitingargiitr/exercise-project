@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - Exercise Form Analyzer{% endblock %}
+
+{% block content %}
+<div class="leaderboard-container">
+    <div class="leaderboard-header">
+        <h1><i class="fas fa-medal"></i> Leaderboard</h1>
+        <p>See how you rank against other fitness enthusiasts!</p>
+    </div>
+    
+    <div class="leaderboard-stats">
+        <div class="stat-card">
+            <h3>{{ top_users|length }}</h3>
+            <p>Active Users</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ top_users[0].1.level if top_users else 0 }}</h3>
+            <p>Highest Level</p>
+        </div>
+    </div>
+    
+    <div class="leaderboard-list">
+        {% for user, user_level in top_users %}
+        <div class="leaderboard-item {% if user.id == current_user.id %}current-user{% endif %}">
+            <div class="rank">
+                {% if loop.index == 1 %}
+                    <i class="fas fa-crown gold"></i>
+                {% elif loop.index == 2 %}
+                    <i class="fas fa-medal silver"></i>
+                {% elif loop.index == 3 %}
+                    <i class="fas fa-medal bronze"></i>
+                {% else %}
+                    <span class="rank-number">{{ loop.index }}</span>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture }}" alt="{{ user.name }}">
+                    {% else %}
+                        <i class="fas fa-user"></i>
+                    {% endif %}
+                </div>
+                <div class="user-details">
+                    <h3>{{ user.name }}</h3>
+                    <p class="user-level">{{ user_level.get_level_name() }} (Level {{ user_level.level }})</p>
+                </div>
+            </div>
+            <div class="user-stats">
+                <div class="stat">
+                    <span class="stat-value">{{ user_level.experience_points }}</span>
+                    <span class="stat-label">XP</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">{{ user_level.total_workouts }}</span>
+                    <span class="stat-label">Workouts</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">{{ user_level.streak_days }}</span>
+                    <span class="stat-label">Streak</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if top_users|length == 0 %}
+        <div class="empty-leaderboard">
+            <i class="fas fa-chart-line"></i>
+            <h3>No Rankings Yet</h3>
+            <p>Be the first to appear on the leaderboard!</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="leaderboard-footer">
+        <p>Rankings are updated in real-time based on level and experience points.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to leaderboard items
+    const items = document.querySelectorAll('.leaderboard-item');
+    items.forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.1}s`;
+    });
+    
+    // Highlight current user
+    const currentUser = document.querySelector('.current-user');
+    if (currentUser) {
+        currentUser.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+</script>
+{% endblock %}
+

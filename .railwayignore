@@ -1,0 +1,60 @@
+# Development files
+test_app.py
+*.zip
+*.bat
+run_app.bat
+.env
+.env.local
+.env.example
+
+# Large model files (exclude from deployment)
+models/
+data/
+uploads/
+output/
+static.zip
+templates.zip
+models.zip
+
+# Development database
+*.db
+*.sqlite
+*.sqlite3
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+DEPLOYMENT_GUIDE.md
+GAMIFICATION_FEATURES.md
+CLEANUP_SUMMARY.md

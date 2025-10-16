@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Card Collection - Exercise Form Analyzer{% endblock %}
+
+{% block content %}
+<div class="cards-container">
+    <div class="cards-header">
+        <h1><i class="fas fa-id-card"></i> Card Collection</h1>
+        <p>Collect cards by completing workouts with good form!</p>
+    </div>
+    
+    <div class="cards-filters">
+        <button class="filter-btn active" data-filter="all">All Cards</button>
+        <button class="filter-btn" data-filter="common">Common</button>
+        <button class="filter-btn" data-filter="rare">Rare</button>
+        <button class="filter-btn" data-filter="epic">Epic</button>
+        <button class="filter-btn" data-filter="legendary">Legendary</button>
+    </div>
+    
+    <div class="cards-grid">
+        {% for card, user_card in user_cards %}
+        <div class="card-item {{ card.rarity }}" data-rarity="{{ card.rarity }}">
+            <div class="card-header">
+                <div class="card-rarity {{ card.rarity }}">
+                    {{ card.rarity.title() }}
+                </div>
+                {% if user_card.quantity > 1 %}
+                <div class="card-quantity">
+                    x{{ user_card.quantity }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-content">
+                <div class="card-icon">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <h3>{{ card.name }}</h3>
+                <p>{{ card.description }}</p>
+                <div class="card-category">
+                    <span class="category-badge">{{ card.category.title() }}</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="obtained-date">
+                    Obtained {{ user_card.obtained_at.strftime('%B %d, %Y') }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if user_cards|length == 0 %}
+        <div class="empty-collection">
+            <i class="fas fa-id-card"></i>
+            <h3>No Cards Yet</h3>
+            <p>Complete workouts with good form to earn your first cards!</p>
+            <a href="{{ url_for('index') }}" class="cta-button">Start Working Out</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="collection-stats">
+        <div class="stat-card">
+            <h3>{{ user_cards|length }}</h3>
+            <p>Total Cards</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ user_cards|selectattr('1.quantity')|sum(attribute='1.quantity') }}</h3>
+            <p>Total Quantity</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cardItems = document.querySelectorAll('.card-item');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Update active button
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter cards
+            const filter = this.dataset.filter;
+            cardItems.forEach(card => {
+                if (filter === 'all' || card.dataset.rarity === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Add hover effects
+    cardItems.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}
+

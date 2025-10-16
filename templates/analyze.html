@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Analyze {{ exercise.name }} - Exercise Form Analyzer{% endblock %}
+
+{% block content %}
+<div class="analyze-header">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('index') }}">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="{{ url_for('exercise_info', exercise_type=exercise_type) }}">{{ exercise.name }}</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Analyze</span>
+        </div>
+        
+        <h1 class="analyze-title">Analyze Your {{ exercise.name }}</h1>
+        <p class="analyze-subtitle">Upload a video of yourself performing the exercise to get AI-powered form analysis</p>
+    </div>
+</div>
+
+<div class="analyze-content">
+    <div class="container">
+        <div class="upload-section">
+            <div class="upload-container">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Drop your video here</h3>
+                    <p>or <span class="upload-link">browse files</span></p>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                    <div class="upload-formats">
+                        <small>Supported formats: MP4, AVI, MOV, MKV, WebM</small>
+                        <small>Max file size: 100MB</small>
+                    </div>
+                </div>
+                
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">Uploading...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-section" id="analysisSection" style="display: none;">
+            <div class="analysis-container">
+                <div class="analysis-header">
+                    <h2>
+                        <i class="fas fa-cogs fa-spin"></i>
+                        Analyzing Your Video
+                    </h2>
+                    <p>Our AI is processing your video and analyzing your form...</p>
+                </div>
+                
+                <div class="analysis-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Processing Video</h4>
+                            <p>Extracting frames and pose data</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step2">
+                        <div class="step-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>AI Analysis</h4>
+                            <p>Analyzing form and movement patterns</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step" id="step3">
+                        <div class="step-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Generating Feedback</h4>
+                            <p>Creating personalized recommendations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <h3>Tips for Best Results</h3>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <i class="fas fa-video"></i>
+                    <h4>Good Lighting</h4>
+                    <p>Ensure you're well-lit and visible in the video</p>
+                </div>
+                <div class="tip-card">
+                    <i class="fas fa-user"></i>
+                    <h4>Full Body View</h4>
+                    <p>Make sure your entire body is visible in the frame</p>
+                </div>
+                <div class="tip-card">
+                    <i class="fas fa-clock"></i>
+                    <h4>Complete Movement</h4>
+                    <p>Record a few complete repetitions of the exercise</p>
+                </div>
+                <div class="tip-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h4>Stable Camera</h4>
+                    <p>Keep the camera steady or use a tripod</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentStep = 1;
+const exerciseType = '{{ exercise_type }}';
+
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const videoInput = document.getElementById('videoInput');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const analysisSection = document.getElementById('analysisSection');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    // Upload area click handler
+    uploadArea.addEventListener('click', () => {
+        videoInput.click();
+    });
+
+    // Drag and drop handlers
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileUpload(files[0]);
+        }
+    });
+
+    // File input handler
+    videoInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFileUpload(e.target.files[0]);
+        }
+    });
+
+    function handleFileUpload(file) {
+        // Validate file type
+        const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/x-msvideo', 'video/webm'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please select a valid video file (MP4, AVI, MOV, MKV, WebM)');
+            return;
+        }
+
+        // Validate file size (100MB)
+        if (file.size > 100 * 1024 * 1024) {
+            alert('File size must be less than 100MB');
+            return;
+        }
+
+        uploadFile(file);
+    }
+
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('video', file);
+        formData.append('exercise_type', exerciseType);
+
+        // Show upload progress
+        uploadArea.style.display = 'none';
+        uploadProgress.style.display = 'block';
+
+        // Simulate upload progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `Uploading... ${Math.round(progress)}%`;
+        }, 200);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            clearInterval(progressInterval);
+            progressFill.style.width = '100%';
+            progressText.textContent = 'Upload complete!';
+            
+            setTimeout(() => {
+                uploadProgress.style.display = 'none';
+                analysisSection.style.display = 'block';
+                startAnalysis();
+            }, 1000);
+        })
+        .catch(error => {
+            clearInterval(progressInterval);
+            console.error('Upload error:', error);
+            alert('Upload failed. Please try again.');
+            uploadArea.style.display = 'block';
+            uploadProgress.style.display = 'none';
+        });
+    }
+
+    function startAnalysis() {
+        // Animate through analysis steps
+        setTimeout(() => {
+            document.getElementById('step1').classList.add('completed');
+            document.getElementById('step2').classList.add('active');
+        }, 2000);
+
+        setTimeout(() => {
+            document.getElementById('step2').classList.add('completed');
+            document.getElementById('step3').classList.add('active');
+        }, 4000);
+
+        // Start actual analysis
+        fetch('/process')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Complete the analysis
+            document.getElementById('step3').classList.add('completed');
+            
+            setTimeout(() => {
+                window.location.href = '/results';
+            }, 1000);
+        })
+        .catch(error => {
+            console.error('Analysis error:', error);
+            alert('Analysis failed: ' + error.message);
+            // Reset to upload
+            analysisSection.style.display = 'none';
+            uploadArea.style.display = 'block';
+        });
+    }
+});
+</script>
+{% endblock %}

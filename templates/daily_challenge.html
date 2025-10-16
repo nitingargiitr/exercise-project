@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Daily Challenge - Exercise Form Analyzer{% endblock %}
+
+{% block content %}
+<div class="daily-challenge-container">
+    <div class="challenge-header">
+        <h1><i class="fas fa-calendar-day"></i> Daily Challenge</h1>
+        <p>Complete today's challenge to earn bonus XP and cards!</p>
+    </div>
+    
+    {% if challenge %}
+    <div class="challenge-card">
+        <div class="challenge-info">
+            <h2>{{ challenge.name }}</h2>
+            <p class="challenge-description">{{ challenge.description }}</p>
+            
+            <div class="challenge-requirements">
+                <div class="requirement">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>{{ challenge.target_reps }} {{ challenge.exercise_type.replace('_', ' ').title() }}</span>
+                </div>
+                <div class="requirement">
+                    <i class="fas fa-target"></i>
+                    <span>{{ challenge.target_accuracy }}% accuracy</span>
+                </div>
+            </div>
+            
+            <div class="challenge-rewards">
+                <div class="reward-item">
+                    <i class="fas fa-star"></i>
+                    <span>+{{ challenge.xp_reward }} XP</span>
+                </div>
+                {% if challenge.card_reward %}
+                <div class="reward-item">
+                    <i class="fas fa-id-card"></i>
+                    <span>Special Card</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if user_challenge and user_challenge.completed %}
+        <div class="challenge-completed">
+            <i class="fas fa-check-circle"></i>
+            <h3>Challenge Completed!</h3>
+            <p>Great job! You earned {{ challenge.xp_reward }} XP</p>
+            <p class="completion-date">Completed on {{ user_challenge.completed_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            {% if user_challenge.score %}
+            <p class="completion-score">Score: {{ user_challenge.score }}%</p>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="challenge-actions">
+            <a href="{{ url_for('analyze_page', exercise_type=challenge.exercise_type) }}" class="cta-button">
+                <i class="fas fa-play"></i>
+                Start Challenge
+            </a>
+            <a href="{{ url_for('complete_daily_challenge', challenge_id=challenge.id) }}" class="cta-button secondary" onclick="return confirm('Are you sure you completed this challenge? You can only complete it once per day.')">
+                <i class="fas fa-check"></i>
+                Mark as Complete
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="no-challenge">
+        <i class="fas fa-calendar-times"></i>
+        <h3>No Challenge Today</h3>
+        <p>Check back tomorrow for a new daily challenge!</p>
+        <a href="{{ url_for('index') }}" class="cta-button">Continue Training</a>
+    </div>
+    {% endif %}
+    
+    <div class="challenge-history">
+        <h3>Recent Challenges</h3>
+        <div class="history-list">
+            <div class="history-item">
+                <div class="history-date">Today</div>
+                <div class="history-status">
+                    {% if challenge and user_challenge and user_challenge.completed %}
+                        <i class="fas fa-check-circle completed"></i>
+                        <span>Completed</span>
+                    {% elif challenge %}
+                        <i class="fas fa-clock pending"></i>
+                        <span>In Progress</span>
+                    {% else %}
+                        <i class="fas fa-minus unavailable"></i>
+                        <span>No Challenge</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add countdown timer if challenge is active
+    const challengeCard = document.querySelector('.challenge-card');
+    if (challengeCard && !document.querySelector('.challenge-completed')) {
+        // Add some visual effects
+        challengeCard.classList.add('active-challenge');
+    }
+});
+</script>
+{% endblock %}
