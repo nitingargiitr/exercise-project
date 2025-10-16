@@ -42,17 +42,26 @@ mkdir -p uploads output data models
 
 echo "🚀 Starting Gunicorn server on port $PORT..."
 
-# Start the main Exercise Analyzer app
-echo "🎯 Starting Exercise Analyzer Flask app..."
-exec gunicorn \
-    --bind 0.0.0.0:${PORT} \
-    --workers 1 \
-    --timeout 300 \
-    --keep-alive 2 \
-    --max-requests 1000 \
-    --max-requests-jitter 100 \
-    --preload \
-    --log-level info \
-    --access-logfile - \
-    --error-logfile - \
-    app:app
+# Test app import before starting Gunicorn
+echo "🧪 Testing app import..."
+if python3 -c "import app; print('App import successful')" 2>/dev/null; then
+    echo "✅ App import test passed, starting Exercise Analyzer..."
+    exec gunicorn \
+        --bind 0.0.0.0:${PORT} \
+        --workers 1 \
+        --timeout 300 \
+        --keep-alive 2 \
+        --max-requests 1000 \
+        --max-requests-jitter 100 \
+        --preload \
+        --log-level info \
+        --access-logfile - \
+        --error-logfile - \
+        app:app
+else
+    echo "❌ App import test failed!"
+    echo "🔧 Running detailed import test..."
+    python3 test_imports.py
+    echo "❌ Cannot start app due to import errors"
+    exit 1
+fi

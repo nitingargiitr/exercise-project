@@ -35,20 +35,48 @@ except ImportError as e:
         def __call__(self, *args, **kwargs): return None
     def calculate_angle(*args, **kwargs): return 0
 
-# Import core app dependencies
+# Import core app dependencies with error handling
 print("🔧 Loading core dependencies...")
 
-# Import models
-from models import db, User, UserSession, ExerciseHistory, UserLevel, Achievement, UserAchievement, Card, UserCard, DailyChallenge, UserDailyChallenge
+try:
+    # Import models
+    from models import db, User, UserSession, ExerciseHistory, UserLevel, Achievement, UserAchievement, Card, UserCard, DailyChallenge, UserDailyChallenge
+    print("✅ Models imported successfully")
+except Exception as e:
+    print(f"❌ Models import failed: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
 
-# Import forms
-from forms import LoginForm, SignupForm, ForgotPasswordForm
+try:
+    # Import forms
+    from forms import LoginForm, SignupForm, ForgotPasswordForm
+    print("✅ Forms imported successfully")
+except Exception as e:
+    print(f"❌ Forms import failed: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
 
-# Import auth utilities
-from auth_utils import AuthManager, GoogleOAuth
+try:
+    # Import auth utilities
+    from auth_utils import AuthManager, GoogleOAuth
+    print("✅ Auth utils imported successfully")
+except Exception as e:
+    print(f"❌ Auth utils import failed: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
 
-# Import gamification
-from gamification import GamificationManager, initialize_gamification_data
+try:
+    # Import gamification
+    from gamification import GamificationManager, initialize_gamification_data
+    print("✅ Gamification imported successfully")
+except Exception as e:
+    print(f"❌ Gamification import failed: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
 
 print("✅ Core dependencies loaded successfully")
 
