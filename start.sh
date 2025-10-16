@@ -62,12 +62,28 @@ else
     echo "❌ App import test failed!"
     echo "🔧 Testing imports step by step..."
     
+    # Test basic Python functionality
+    echo "Testing basic Python functionality..."
+    if python3 -c "print('Python is working')" 2>/dev/null; then
+        echo "✅ Python is working"
+    else
+        echo "❌ Python is not working"
+    fi
+    
     # Test basic imports
     echo "Testing basic imports..."
-    if python3 -c "import os, sys, time; from datetime import datetime; from flask import Flask; print('Basic imports OK')" 2>/dev/null; then
-        echo "✅ Basic imports: OK"
+    if python3 -c "import os, sys, time; print('Basic modules OK')" 2>/dev/null; then
+        echo "✅ Basic modules: OK"
     else
-        echo "❌ Basic imports failed"
+        echo "❌ Basic modules failed"
+    fi
+    
+    # Test Flask import
+    echo "Testing Flask import..."
+    if python3 -c "from flask import Flask; print('Flask OK')" 2>/dev/null; then
+        echo "✅ Flask: OK"
+    else
+        echo "❌ Flask failed"
     fi
     
     # Test models import
@@ -102,7 +118,19 @@ else
         echo "❌ Gamification import failed"
     fi
     
-    echo "❌ Cannot start app due to import errors"
-    echo "🔧 Check the specific import errors above"
-    exit 1
+    echo "❌ Cannot start main app due to import errors"
+    echo "🔧 Starting minimal app as fallback..."
+    echo "🎯 This ensures your app is accessible while we fix the import issues"
+    
+    exec gunicorn \
+        --bind 0.0.0.0:${PORT} \
+        --workers 1 \
+        --timeout 60 \
+        --keep-alive 2 \
+        --max-requests 1000 \
+        --max-requests-jitter 100 \
+        --log-level info \
+        --access-logfile - \
+        --error-logfile - \
+        minimal_app:app
 fi
